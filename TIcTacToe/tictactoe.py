@@ -18,18 +18,40 @@ def main():
             inCheck = True
             print("Invalid response! Please enter a number choice...")
 
-    player,gameBoard,winner = gameStart()
+    player,gameBoard,is_winner = gameStart()
 
-    while winner == False:
+    while is_winner == False:
         gameBoard = playerTurn(player,gameBoard)
+        is_winner, winner = validate(gameBoard)
+        if player == 1:
+            player = 2
+        elif player == 2:
+            player = 1
     
-    gameBoard = [[0,0,0],[0,0,0],[0,0,0]]
-    drawBoard(gameBoard)
+    
 
-    pass
+
 
 def validate(game):
-    pass
+    cases = []
+    A = []
+    B = []
+    C = []
+    rd = [game[0][0],game[1][1],game[2][2]]
+    ld = [game[0][2],game[1][1],game[2][0]]
+    for i in game:
+        cases.append(i)
+        A.append(i[0])
+        B.append(i[1])
+        C.append(i[2])
+    cases.extend((A,B,C,ld,rd))
+    for i in cases:
+        if all(v == 1 for v in i):
+            return True, 1
+        elif all(v == 2 for v in i):
+            return True, 2
+    return False, 0
+    
 
 def playerTurn(player, game):
     print("\n")
