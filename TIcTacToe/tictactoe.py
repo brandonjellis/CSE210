@@ -5,7 +5,13 @@ CSE210 TicTacToe
 First assignment for programming with functions
 '''
 
+from random import randint as r
+
 def main():
+    score = [0,0]
+    gameLoop = True
+
+    
     print("Welcome to Tic-Tac-Toe!\n[1] START GAME\n[2] EXIT\n")
     inCheck = True
     while inCheck:
@@ -13,20 +19,42 @@ def main():
         if user_input == "1":
             inCheck = False
         elif user_input == "2":
+            print("Thank you for playing!")
             exit()
         else:
             inCheck = True
             print("Invalid response! Please enter a number choice...")
 
-    player,gameBoard,is_winner = gameStart()
+    while gameLoop:
+        player,gameBoard,is_winner = gameStart()
 
-    while is_winner == False:
-        gameBoard = playerTurn(player,gameBoard)
-        is_winner, winner = validate(gameBoard)
-        if player == 1:
-            player = 2
-        elif player == 2:
-            player = 1
+        while is_winner == False:
+            gameBoard = playerTurn(player,gameBoard)
+            is_winner, winner = validate(gameBoard)
+            if player == 1:
+                player = 2
+            elif player == 2:
+                player = 1
+        
+        print("\n")
+        drawBoard(gameBoard)
+        score = gameWinner(winner,score)
+
+        print("\nPlay again?\n[1] YES\n[2] NO\n")
+        inCheck = True
+        while inCheck:
+            user_input = input("> ")
+            if user_input == "1":
+                inCheck = False 
+            elif user_input == "2":
+                gameLoop = False
+                inCheck =  False
+            else:
+                inCheck = True
+                print("Invalid response! Please enter a number choice...")
+
+    print("Thank you for playing!")
+    exit()
     
     
 
@@ -50,7 +78,10 @@ def validate(game):
             return True, 1
         elif all(v == 2 for v in i):
             return True, 2
-    return False, 0
+    if all(0 not in l for l in cases):
+        return True, 3
+    else:
+        return False, 0
     
 
 def playerTurn(player, game):
@@ -61,6 +92,8 @@ def playerTurn(player, game):
     inCheck = True
     while inCheck:
         move = input("Enter the coordinate for your next move (eg. \"A1\"):\n> ")
+        move = move.strip()
+        move = move.upper()
         if move[0] in ["A","B","C"] and move[1] in ["1","2","3"]:
             row = int(move[1])-1
             col = 0
@@ -84,9 +117,21 @@ def playerTurn(player, game):
     game[row][col] = player
     return game
 
+def gameWinner(winner,score):
+    if winner == 3:
+        print("\nIt's a draw!")
+    else:
+        print("\nPlayer ",winner," wins!")
+        score[winner-1] += 1
+        print("The score is...\nX:",score[0],"\nO:",score[1])
+
+    return score
 
 def gameStart():
-    return 1, [[0,0,0],[0,0,0],[0,0,0]],False
+    player = r(1,2)
+    print("A coin is flipped... Player ",player," will go first!")
+
+    return player, [[0,0,0],[0,0,0],[0,0,0]],False
 
 def drawBoard(game):
     def drawRow(row,rowNum):
